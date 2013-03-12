@@ -17,7 +17,7 @@ More information can be found here: <a href="http://www.webdeveasy.com/backbone-
 
 1. Define your cache object (can be more then one). In this sample we define global application cache.
 
-    `app.globalCache = new Backbone.Cache();`
+    ```app.globalCache = new Backbone.Cache();```
 
 2. For each model or collection which you want to cache, set `cacheKey` and `cacheObject` properties.
  
@@ -36,10 +36,10 @@ More information can be found here: <a href="http://www.webdeveasy.com/backbone-
 
 3. Somewhere in the application call fetch.
 
-    `
+    ```
     var user1Permissions = new UserPermissions({ id: 1 });
     user1Permissions.fetch();
-    `
+    ```
 
 4. Later in the application call another fetch. This time the cached data returns without server calling.
 
