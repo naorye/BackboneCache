@@ -1,9 +1,6 @@
-define([
-    'jQuery',
-    'Backbone'
-], function ($, Backbone) {
+(function($, Backbone) {
 
-    if (Backbone.Cache) return Backbone.Cache;
+    if (Backbone.Cache) return;
 
     Backbone.Cache = function() {
         this.store = {};
@@ -83,6 +80,4 @@ define([
             return originalModelFetch.call(this, options);
         }
     };
-
-    return Backbone.Cache;
-});
+})(jQuery, Backbone);
