@@ -32,52 +32,53 @@
         }
     });
 
-    var originalModelFetch = Backbone.Model.prototype.fetch,
-        originalCollectionFetch = Backbone.Collection.prototype.fetch;
-
-    Backbone.Collection.prototype.fetch = function(options) {
-        if (this.cacheKey && this.cacheObject) {
-            var cacheObject = this.cacheObject,
-                cacheKey = this.cacheKey;
-            if (cacheObject.has(cacheKey)) {
-                var resp = cacheObject.get(cacheKey),
-                    method = options.update ? 'update' : 'reset';
-                this[method](resp, options);
-                if (options.success) options.success(this, resp, options);
-                return $.Deferred().resolve();
+    Backbone.CachedCollection = Backbone.Collection.extend({
+        fetch: function(options) {
+            if (this.cacheKey && this.cacheObject) {
+                var cacheObject = this.cacheObject,
+                    cacheKey = this.cacheKey;
+                if (cacheObject.has(cacheKey)) {
+                    var resp = cacheObject.get(cacheKey),
+                        method = options.update ? 'update' : 'reset';
+                    this[method](resp, options);
+                    if (options.success) options.success(this, resp, options);
+                    return $.Deferred().resolve();
+                } else {
+                    var success = options.success;
+                    options.success = function(entity, resp, options) {
+                        cacheObject.set(cacheKey, resp);
+                        if (success) success(entity, resp, options);
+                    };
+                    return Backbone.Collection.prototype.fetch.call(this, options);
+                }
             } else {
-                var success = options.success;
-                options.success = function(entity, resp, options) {
-                    cacheObject.set(cacheKey, resp);
-                    if (success) success(entity, resp, options);
-                };
-                return originalCollectionFetch.call(this, options);
+                return Backbone.Collection.prototype.fetch.call(this, options);
             }
-        } else {
-            return originalCollectionFetch.call(this, options);
         }
-    };
+    });
 
-    Backbone.Model.prototype.fetch = function(options) {
-        if (this.cacheKey && this.cacheObject) {
-            options = options || {};
-            var cacheObject = this.cacheObject,
-                cacheKey = this.cacheKey,
-                success = options.success;
-            if (cacheObject.has(cacheKey)) {
-                var resp = cacheObject.get(cacheKey);
-                this.set(this.parse(resp, options), options);
-                if (success) success(this, resp, options);
-                return $.Deferred().resolve();
+    Backbone.CachedModel = Backbone.Model.extend({
+        fetch: function(options) {
+            if (this.cacheKey && this.cacheObject) {
+                options = options || {};
+                var cacheObject = this.cacheObject,
+                    cacheKey = this.cacheKey,
+                    success = options.success;
+                if (cacheObject.has(cacheKey)) {
+                    var resp = cacheObject.get(cacheKey);
+                    this.set(this.parse(resp, options), options);
+                    if (success) success(this, resp, options);
+                    return $.Deferred().resolve();
+                } else {
+                    options.success = function(entity, resp, options) {
+                        cacheObject.set(cacheKey, resp);
+                        if (success) success(entity, resp, options);
+                    };
+                    return Backbone.Model.prototype.fetch.call(this, options);
+                }
             } else {
-                options.success = function(entity, resp, options) {
-                    cacheObject.set(cacheKey, resp);
-                    if (success) success(entity, resp, options);
-                };
-                return originalModelFetch.call(this, options);
+                return Backbone.Model.prototype.fetch.call(this, options);
             }
-        } else {
-            return originalModelFetch.call(this, options);
         }
-    };
+    });
 })(jQuery, Backbone);

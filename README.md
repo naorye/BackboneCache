@@ -19,10 +19,10 @@ More information can be found here: <a href="http://www.webdeveasy.com/backbone-
 
     ```app.globalCache = new Backbone.Cache();```
 
-2. For each model or collection which you want to cache, set `cacheKey` and `cacheObject` properties.
+2. For each model / collection which you want to cache, extend from `Backbone.CachedModel` / `Backbone.CachedCollection` and set the `cacheKey` and `cacheObject` properties.
  
     ```
-    var UserPermissions = Backbone.Model.extend({
+    var UserPermissions = Backbone.CachedModel.extend({
         cacheObject: app.globalCache,
         initialize: function() {
             var userId = this.get('id');
