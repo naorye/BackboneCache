@@ -1,4 +1,4 @@
-# Backbone.Cahce
+# Backbone.Cache
 
 > Backbone cache plugin for models and collections
 
